@@ -3,7 +3,9 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import type { ZodType } from "zod/v4";
 import { config } from "./config.js";
 
-export const client = new Anthropic();
+// Secrets pasted into GitHub sometimes carry line breaks or spaces; a key is one token.
+const apiKey = process.env.ANTHROPIC_API_KEY?.replace(/\s+/g, "");
+export const client = new Anthropic(apiKey ? { apiKey } : {});
 
 /**
  * One structured call. The system prompt is frozen brand text and is cached;
