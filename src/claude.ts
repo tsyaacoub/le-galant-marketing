@@ -4,7 +4,7 @@ import type { ZodType } from "zod/v4";
 import { config } from "./config.js";
 
 // Secrets pasted into GitHub sometimes carry line breaks or spaces; a key is one token.
-const apiKey = process.env.ANTHROPIC_API_KEY?.replace(/\s+/g, "");
+const apiKey = process.env.ANTHROPIC_API_KEY?.replace(/\s+/g, "").match(/sk-ant-[A-Za-z0-9_-]{20,}/)?.[0];
 export const client = new Anthropic(apiKey ? { apiKey } : {});
 
 /**
