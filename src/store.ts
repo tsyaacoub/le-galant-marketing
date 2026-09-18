@@ -145,5 +145,9 @@ export class SheetsStore implements Store {
 }
 
 export function openStore(): Store {
+  if (config.store === "sheet" && !(process.env.SHEET_ID && process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64)) {
+    console.log("Sheet not configured yet (SHEET_ID or GOOGLE_SERVICE_ACCOUNT_JSON_B64 missing); nothing to do.");
+    process.exit(0);
+  }
   return config.store === "sheet" ? new SheetsStore() : new LocalStore();
 }
