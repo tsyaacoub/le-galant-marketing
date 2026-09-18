@@ -32,7 +32,7 @@ Owner notes: ${row.notes || "none"}`;
 }
 
 async function main() {
-  const store = openStore();
+  const store = await openStore();
   const [calendar, library] = await Promise.all([store.calendar(), store.library()]);
   const todo = calendar.filter((r) => ["planned", "needs_photo"].includes(r.status) && !r.caption);
   if (todo.length === 0) { console.log("Nothing to write."); return; }

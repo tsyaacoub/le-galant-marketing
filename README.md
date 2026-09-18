@@ -1,68 +1,57 @@
 # Le Galant Catering, Instagram pipeline
 
-Four small agents and one shared sheet. The Strategist plans a month, the Copywriter drafts each post,
+Four small agents and a GitHub repository as the shared desk. The Strategist plans a month, the Copywriter drafts each post,
 Tony approves from his phone by changing one cell, the Publisher posts what is approved when its time comes,
 and the Analyst writes the numbers back so next month's plan learns from this one.
 
 ```
 Strategist (monthly) -> rows "planned" -> Copywriter (daily) -> "draft"
-        -> Tony sets "approved" in the sheet -> Publisher (every 30 min) -> "posted"
+        -> Tony replies "approve" on the issue -> Publisher (every 30 min) -> "posted"
         -> Analyst (weekly, 7 days later) -> "measured" -> back to the Strategist
 ```
 
-Nothing is posted without an approved cell. The Publisher also refuses to post unless `PUBLISH_ENABLED=yes`.
+Nothing is posted without an approval. The Publisher also refuses to post unless `PUBLISH_ENABLED=yes`.
 
-## The sheet
+## Where posts live: GitHub Issues
 
-One Google Sheet, three tabs. The header row is the contract; the scripts write the header the first time.
+Every post is one issue in this repository, labelled `post` and `status:<state>`. The owner works from the
+GitHub app on the phone:
 
-| Tab | Purpose | Columns |
-| --- | --- | --- |
-| `calendar` | One row per post, from plan to numbers | id, date, time, pillar, hero, language, format, angle, frame_ids, image_urls, caption, first_comment, alt_text, missing_facts, status, ig_media_id, posted_at, reach, saves, likes, comments, inquiries, notes |
-| `library` | Every photo or video, with a public URL | frame_id, url, kind, dish, setting, format, season, client_consent, source, used_on |
-| `dates` | Dates that matter in Lebanon | date, name, angle |
+- **approve** (or `ok`, `تمام`) as a reply moves a draft to approved.
+- **reject** closes it. **redo** clears the caption; anything after the word becomes a note the Copywriter uses.
+- Any other reply is kept as a note (a client name, a fact, a correction).
+- A photo attached to a reply is added to the post's images.
+
+Only replies from the repository owner or a collaborator count. The issue body holds the machine copy of the row
+inside an HTML comment; do not edit that part by hand.
+
+Photo library and key dates are two JSON files in the repo, `data/library.json` and `data/dates.json`.
 
 Status values, in order: `planned`, `needs_photo`, `draft`, `approved`, `rejected`, `posted`, `measured`, `failed`.
 
-The only cells a person edits day to day: `status` (draft to approved or rejected), `image_urls` (paste the
-public link(s) of the photo(s) once they exist, space separated), `notes` (facts for the Copywriter, or a reason
-for a rejection), and `inquiries` (how many messages a post brought).
+A Google Sheet store also exists (`STORE=sheet`, see `.env.example`) for a team that prefers a spreadsheet.
 
-`image_urls` must be public links Meta can download. Google Drive share links do not work. A public Supabase
-storage bucket, Cloudinary, or any plain HTTPS image URL does.
+## Setup
 
-## Setup, once
+1. **Anthropic.** Create an API key in the Console and save it as the repository secret `ANTHROPIC_API_KEY`
+   (Settings, Secrets and variables, Actions). This is the only secret the drafting needs; `GITHUB_TOKEN` is automatic.
+2. **Load month one.** Actions tab, `seed`, Run workflow. Sixteen October issues appear.
+3. **Draft.** Actions tab, `copywriter`, Run workflow (or wait for 06:00 Beirut). Each issue gets its caption.
+4. **Meta, later.** For automatic posting: Business account linked to a Page, a Meta app, a long-lived token with
+   `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights`; secrets `META_ACCESS_TOKEN` and
+   `IG_USER_ID`; variable `PUBLISH_ENABLED=yes` after a dry run. Images attached to issues in a private
+   repository are not reachable by Meta; the Publisher needs public image URLs (a public storage bucket). Until then
+   posting is manual: copy the caption from the approved issue.
 
-1. **Anthropic.** Create an API key in the Console.
-2. **Google Sheet.** Create the sheet with the three tabs above (empty is fine). In Google Cloud, create a service
-   account, enable the Sheets API, download its JSON key, and share the sheet with the service account's email
-   as Editor. Encode the JSON: `base64 -w0 key.json`.
-3. **Meta.** The Instagram account must be a Business account linked to a Facebook Page. In Meta for Developers,
-   create an app, add the Instagram Graph API product, and generate a long-lived user token with
-   `instagram_basic`, `instagram_content_publish`, `instagram_manage_insights`, `pages_show_list`,
-   `pages_read_engagement`. Find the Instagram user id with `me/accounts?fields=instagram_business_account`.
-   Until Meta app review is done the token only works for admins of the app, which is enough for our own account.
-4. **GitHub.** Push this folder to a private repository. In Settings, Secrets and variables, Actions, add the
-   secrets `ANTHROPIC_API_KEY`, `SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_JSON_B64`, `META_ACCESS_TOKEN`, `IG_USER_ID`,
-   and the variable `PUBLISH_ENABLED` set to `no` at first. The four workflows in `.github/workflows` then run
-   on their schedules, and each can be started by hand from the Actions tab.
-5. **Photos.** Upload the shoot to public storage and fill the `library` tab. Until then the Strategist marks rows
-   `needs_photo`, the Copywriter still drafts them, and the Publisher waits for `image_urls`.
-
-Switch `PUBLISH_ENABLED` to `yes` when a dry run has printed exactly what you expect.
-
-## Try it locally, with no sheet
+## Try it locally, with no GitHub
 
 ```bash
-cp .env.example .env          # add ANTHROPIC_API_KEY; leave STORE=local
+cp .env.example .env          # add ANTHROPIC_API_KEY; set STORE=local
 npm install
-npm test                      # unit tests, no network
+npm test
 npm run copywriter            # drafts the 16 seeded October rows into data/calendar.local.json
 npm run publisher             # dry run: prints what would be posted, posts nothing
 ```
-
-`data/calendar.local.json` ships with October 2026 planned, so the Copywriter has work the first time it runs.
-`data/dates.local.json` holds the fixed Lebanese dates; add the movable religious ones each year in the sheet's `dates` tab.
 
 ## Schedules (Beirut time)
 

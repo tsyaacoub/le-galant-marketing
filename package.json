@@ -10,6 +10,7 @@
     "copywriter": "tsx src/copywriter.ts",
     "publisher": "tsx src/publisher.ts",
     "analyst": "tsx src/analyst.ts",
+    "seed": "tsx src/seed.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

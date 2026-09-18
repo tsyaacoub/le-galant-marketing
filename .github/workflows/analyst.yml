@@ -7,6 +7,9 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +21,8 @@ jobs:
       - run: npm run analyst
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          STORE: sheet
+          STORE: github
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SHEET_ID: ${{ secrets.SHEET_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON_B64: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON_B64 }}
           META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}

@@ -32,7 +32,7 @@ async function post(row: CalendarRow): Promise<string> {
 }
 
 async function main() {
-  const store = openStore();
+  const store = await openStore();
   const due = (await store.calendar()).filter((r) => r.status === "approved" && isDue(r.date, r.time));
   if (due.length === 0) { console.log("Nothing due."); return; }
 

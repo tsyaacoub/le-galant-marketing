@@ -29,7 +29,7 @@ function fmt(rows: CalendarRow[]) {
 }
 
 async function main() {
-  const store = openStore();
+  const store = await openStore();
   const target = nextMonth(todayInBeirut());
   const prefix = `${target.year}-${String(target.month).padStart(2, "0")}`;
 

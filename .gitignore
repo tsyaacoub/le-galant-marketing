@@ -1,6 +1,2 @@
 node_modules
 .env
-data/*.local.json
-!data/calendar.local.json
-!data/library.local.json
-!data/dates.local.json

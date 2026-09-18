@@ -20,8 +20,8 @@ export interface Store {
 
 const LOCAL = {
   calendar: "data/calendar.local.json",
-  library: "data/library.local.json",
-  dates: "data/dates.local.json",
+  library: "data/library.json",
+  dates: "data/dates.json",
 };
 
 async function readJson<T extends ZodTypeAny>(path: string, schema: T): Promise<z.infer<T>[]> {
@@ -144,7 +144,11 @@ export class SheetsStore implements Store {
   }
 }
 
-export function openStore(): Store {
+export async function openStore(): Promise<Store> {
+  if (config.store === "github") {
+    const { GitHubStore } = await import("./github-store.js");
+    return new GitHubStore();
+  }
   if (config.store === "sheet" && !(process.env.SHEET_ID && process.env.GOOGLE_SERVICE_ACCOUNT_JSON_B64)) {
     console.log("Sheet not configured yet (SHEET_ID or GOOGLE_SERVICE_ACCOUNT_JSON_B64 missing); nothing to do.");
     process.exit(0);

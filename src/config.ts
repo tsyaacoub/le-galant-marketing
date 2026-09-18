@@ -9,7 +9,7 @@ function env(name: string, fallback?: string): string {
 }
 
 export const config = {
-  store: (process.env.STORE ?? "local") as "local" | "sheet",
+  store: (process.env.STORE ?? "local") as "local" | "sheet" | "github",
   sheetId: () => env("SHEET_ID"),
   serviceAccount: () => JSON.parse(Buffer.from(env("GOOGLE_SERVICE_ACCOUNT_JSON_B64"), "base64").toString("utf8")),
   metaToken: () => env("META_ACCESS_TOKEN"),

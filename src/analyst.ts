@@ -8,7 +8,7 @@ import { insights } from "./meta.js";
 import { openStore } from "./store.js";
 
 async function main() {
-  const store = openStore();
+  const store = await openStore();
   const today = todayInBeirut();
   const ready = (await store.calendar()).filter((r) => r.status === "posted" && r.ig_media_id && daysBetween(r.date, today) >= 7);
   if (ready.length === 0) { console.log("Nothing to measure."); return; }
