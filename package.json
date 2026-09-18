@@ -1,0 +1,27 @@
+{
+  "name": "le-galant-marketing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Le Galant Catering Instagram pipeline: Strategist and Copywriter draft into a shared sheet, the owner approves, the Publisher posts, the Analyst measures.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "strategist": "tsx src/strategist.ts",
+    "copywriter": "tsx src/copywriter.ts",
+    "publisher": "tsx src/publisher.ts",
+    "analyst": "tsx src/analyst.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
+    "googleapis": "^181.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}
