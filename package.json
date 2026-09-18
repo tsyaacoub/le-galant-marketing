@@ -11,6 +11,7 @@
     "publisher": "tsx src/publisher.ts",
     "analyst": "tsx src/analyst.ts",
     "seed": "tsx src/seed.ts",
+    "reschedule": "tsx src/reschedule.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

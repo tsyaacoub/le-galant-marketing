@@ -1,0 +1,27 @@
+# Moves every unposted post so the first lands on the given day; the rest follow Mon/Wed/Thu/Sat.
+name: reschedule
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "First post date, YYYY-MM-DD (empty = today in Beirut)"
+        required: false
+        default: ""
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run reschedule
+        env:
+          STORE: github
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          START: ${{ inputs.start }}

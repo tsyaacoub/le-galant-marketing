@@ -193,6 +193,7 @@ export class GitHubStore implements Store {
   private async write(number: number, row: CalendarRow) {
     const closed = ["rejected", "measured"].includes(row.status);
     await this.api("PATCH", `/repos/${this.repo}/issues/${number}`, {
+      title: `${row.date} · ${row.pillar} · ${row.hero}`,
       body: renderBody(row),
       labels: ["post", statusLabel(row.status)],
       state: closed ? "closed" : "open",

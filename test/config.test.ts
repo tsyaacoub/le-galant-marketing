@@ -21,3 +21,11 @@ describe("Beirut time", () => {
     expect(daysBetween("2026-10-01", "2026-10-08")).toBe(7);
   });
 });
+
+import { slots } from "../src/reschedule.js";
+describe("reschedule slots", () => {
+  it("starts on the given day, then Mon/Wed/Thu/Sat", () => {
+    // 2026-09-18 is a Friday
+    expect(slots("2026-09-18", 6)).toEqual(["2026-09-18", "2026-09-19", "2026-09-21", "2026-09-23", "2026-09-24", "2026-09-26"]);
+  });
+});
